@@ -52,3 +52,6 @@ Disable stonith (this will start the cluster):
 ```
 pcs property set stonith-enabled=false
 ```
+
+You can view and modify your cluster in the web ui even when you created it in cli, but you need to add it there first (Add existing).
+

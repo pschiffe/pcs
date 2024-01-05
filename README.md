@@ -1,25 +1,27 @@
 # pcs
 
-[Docker](https://www.docker.com/) image with [Pacemaker](http://clusterlabs.org/) and [Corosync](https://corosync.github.io/corosync/) managed by [pcs](https://github.com/feist/pcs).
+![Docker Image Size (tag)](https://img.shields.io/docker/image-size/pschiffe/pcs/latest?label=latest) ![Docker Pulls](https://img.shields.io/docker/pulls/pschiffe/pcs)
+
+This is a [Docker](https://www.docker.com/) image that includes [Pacemaker](http://clusterlabs.org/) and [Corosync](https://corosync.github.io/corosync/), both managed by [pcs](https://github.com/feist/pcs).
 
 To get this image, pull it from [docker hub](https://hub.docker.com/r/pschiffe/pcs/):
 ```
 docker pull pschiffe/pcs
 ```
 
-If you want to build this image yourself, clone the [github repo](https://github.com/pschiffe/pcs) and in directory with Dockerfile run:
+If you want to build this image yourself, clone the [GitHub repository](https://github.com/pschiffe/pcs) and run the following command in the directory containing the Dockerfile:
 ```
-docker build -t <username>/pcs .
+docker build -t pcs .
 ```
 
 To run the image:
 ```
-docker run -d --privileged --net=host -p 2224:2224 -v /sys/fs/cgroup:/sys/fs/cgroup -v /etc/localtime:/etc/localtime:ro -v /run/docker.sock:/run/docker.sock -v /usr/bin/docker:/usr/bin/docker:ro --name pcs pcs
+docker run -dt --privileged --net=host -v /sys/fs/cgroup:/sys/fs/cgroup -v /etc/localtime:/etc/localtime:ro -v /run/docker.sock:/run/docker.sock:ro -v /usr/bin/docker:/usr/bin/docker:ro --name pcs pschiffe/pcs
 ```
 
-Pacemaker in this image is able to manage docker containers on the host - that's why I'm exposing docker socket and binary to the image (don't expose if not needed). Cgroup fs and privileged mode is required by the systemd in the container and `--net=host` is required so the pacemaker is able to manage virtual IP.
+The Pacemaker in this image can manage Docker containers on the host. This is why the Docker socket and binary are exposed to the image (do not expose these if not necessary). Cgroup fs and privileged mode is required by the systemd in the container and `--net=host` is required so the pacemaker is able to manage virtual IP.
 
-Pcs web ui will be available on the [https://localhost:2224/](https://localhost:2224/). To log in, you need to set password for the `hacluster` linux user inside of the image:
+The pcs web UI will be available at https://localhost:2224/. To log in, you need to set a password for the `hacluster` Linux user inside the image:
 ```
 docker exec -it pcs bash
 passwd hacluster
@@ -29,13 +31,12 @@ Then you can use `hacluster` as the login name and your password in the web ui.
 
 #### Example usage
 
-You can create cluster in the web ui, or via cli. Every node in the cluster must be running pcs docker container and must have setup password for the `hacluster` user. Then, on one of the nodes in the cluster run (modify pieces in []):
+You can create a cluster using the web UI or via the CLI. Every node in the cluster must be running the pcs Docker container and must have a set password for the `hacluster` user. Then, on one of the nodes in the cluster run (modify pieces in []):
 ```
 docker exec -it pcs bash
-pcs cluster auth -u hacluster -p [hapass] [master1 master2 master3]  # master[1-3] are hostnames of nodes in your cluster
-pcs cluster setup --name [master] [master1 master2 master3]
-pcs cluster start --all
-pcs cluster enable --all
+pcs host auth -u hacluster -p [hapass] [master1 master2 master3]  # master[1-3] are hostnames of nodes in your cluster
+pcs cluster setup [cluster_name] [master1 master2 master3] --start --enable
+pcs status
 ```
 
 Create virtual ip:
@@ -53,5 +54,4 @@ Disable stonith (this will start the cluster):
 pcs property set stonith-enabled=false
 ```
 
-You can view and modify your cluster in the web ui even when you created it in cli, but you need to add it there first (Add existing).
-
+You can view and modify your cluster in the web UI even if you created it using the CLI. However, you need to add it to the web UI first (select 'Add existing').

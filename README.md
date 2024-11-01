@@ -16,10 +16,10 @@ docker build -t pcs .
 
 To run the image:
 ```
-docker run -dt --privileged --net=host -v /sys/fs/cgroup:/sys/fs/cgroup -v /etc/localtime:/etc/localtime:ro -v /run/docker.sock:/run/docker.sock:ro -v /usr/bin/docker:/usr/bin/docker:ro --name pcs pschiffe/pcs
+docker run -dt --privileged --net=host -v /etc/localtime:/etc/localtime:ro -v /run/docker.sock:/var/docker.sock:ro -v /usr/bin/docker:/usr/bin/docker:ro --name pcs pschiffe/pcs
 ```
 
-The Pacemaker in this image can manage Docker containers on the host. This is why the Docker socket and binary are exposed to the image (do not expose these if not necessary). Cgroup fs and privileged mode is required by the systemd in the container and `--net=host` is required so the pacemaker is able to manage virtual IP.
+The Pacemaker in this image can manage Docker containers on the host. This is why the Docker socket and binary are exposed to the image (do not expose these if not necessary). Privileged mode is required by the systemd in the container and `--net=host` is required so the pacemaker is able to manage virtual IP.
 
 The pcs web UI will be available at https://localhost:2224/. To log in, you need to set a password for the `hacluster` Linux user inside the image:
 ```

@@ -13,6 +13,8 @@ RUN mkdir -p /etc/systemd/system-preset \
   && echo 'enable pcsd.service' > /etc/systemd/system-preset/00-pcsd.preset \
   && systemctl enable pcsd
 
+ENV DOCKER_HOST="unix:///var/docker.sock"
+
 EXPOSE 2224
 
 CMD [ "/usr/lib/systemd/systemd", "--system" ]

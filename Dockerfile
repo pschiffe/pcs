@@ -7,6 +7,7 @@ RUN echo 'install_weak_deps=False' >> /etc/dnf/dnf.conf \
   && dnf install \
     pcs \
     which \
+    cracklib-dicts \
   && dnf clean all
 
 RUN mkdir -p /etc/systemd/system-preset \
